@@ -16,7 +16,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'role',
+        'is_gestor', // Atualizado para usar a coluna da sua migration
         'avatar',
     ];
 
@@ -30,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_gestor' => 'boolean', // Garante que retorne true ou false
         ];
     }
 
@@ -40,7 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isGestor(): bool
     {
-        return $this->role === 'gestor';
+        return (bool) $this->is_gestor;
     }
 
     public function isColaborador(): bool
