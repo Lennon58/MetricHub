@@ -32,13 +32,17 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        // Guarda o caminho do avatar antigo antes do fill()
+        $oldAvatar = $user->avatar;
+
         $user->fill($request->validated());
 
         if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+            // Remove o avatar anterior do storage se ele existir
+            if ($oldAvatar) {
+                Storage::disk('public')->delete($oldAvatar);
             }
-            
+
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $path;
         }
