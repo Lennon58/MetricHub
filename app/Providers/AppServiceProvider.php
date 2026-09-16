@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Vite;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,6 +21,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Vite::prefetch(concurrency: 3);
+        // Personaliza a notificação de e-mail de verificação
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            return (new MailMessage)
+                ->subject('Verifique seu endereço de e-mail')
+                ->greeting('Olá, ' . $notifiable->name . '!')
+                ->line('Clique no botão abaixo para verificar e ativar sua conta em nossa plataforma.')
+                ->action('Verificar E-mail', $url)
+                ->line('Se você não criou uma conta, nenhuma ação adicional é necessária.')
+                ->salutation('Atenciosamente, ' . config('app.name'));
+        });
     }
 }
