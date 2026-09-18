@@ -30,20 +30,21 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        // 
         $user = $request->user();
 
         // Guarda o caminho do avatar antigo antes do fill()
         $oldAvatar = $user->avatar;
 
-        $user->fill($request->validated());
-
+        $user->fill($request->safe()->except('avatar'));
         if ($request->hasFile('avatar')) {
-            // Remove o avatar anterior do storage se ele existir
+            dd($request->all());
+
             if ($oldAvatar) {
                 Storage::disk('public')->delete($oldAvatar);
             }
 
-            $path = $request->file('avatar')->store('avatars', 'public');
+            $path = $request->file('avatar')->store('avatar', 'public');
             $user->avatar = $path;
         }
 
