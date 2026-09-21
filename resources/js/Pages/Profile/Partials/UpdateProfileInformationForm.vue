@@ -45,10 +45,11 @@ const updatePhotoPreview = () => {
 const submit = () => {
     form.post(route('profile.update'), {
         preserveScroll: true,
+        forceFormData: true, // <--- OBRIGATÓRIO PARA ENVIAR O ARQUIVO CORRETAMENTE
         onSuccess: () => {
-            photoPreview.value = null; // Limpa o preview para usar a foto salva vinda do backend
+            photoPreview.value = null;
             if (photoInput.value) {
-                photoInput.value.value = null; // Reseta o input file HTML
+                photoInput.value.value = null;
             }
         },
     });

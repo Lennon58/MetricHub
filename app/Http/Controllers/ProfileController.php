@@ -38,8 +38,7 @@ class ProfileController extends Controller
 
         $user->fill($request->safe()->except('avatar'));
         if ($request->hasFile('avatar')) {
-            dd($request->all());
-
+            
             if ($oldAvatar) {
                 Storage::disk('public')->delete($oldAvatar);
             }
