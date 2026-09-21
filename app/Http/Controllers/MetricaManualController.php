@@ -98,7 +98,7 @@ class MetricaManualController extends Controller
 
         $metricaManual->update($validated);
 
-        return redirect()->route('metricas-manuais.edit', $metricaManual->id)->with('success', 'Métrica atualizada com sucesso!');
+        return redirect()->back()->with('success', 'Métrica atualizada com sucesso!');
     }
 
     /**

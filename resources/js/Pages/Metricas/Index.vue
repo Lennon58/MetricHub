@@ -8,27 +8,10 @@ import InputMetrictype from './Partials/InputMetrictype.vue';
 import InputValue from './Partials/InputValue.vue';
 import InputObs from './Partials/InputObs.vue';
 import MetricTable from './Partials/MetricTable.vue';
-
+import { minutesToTime } from '@/Composables/useTimeConverter';
+import { useMetricaForm } from '@/Composables/useMetricaForm';
 
 const hasCreatedNewMetrica = ref(false);
-
-const RequiredAsterisk = () => h(
-    'span',
-    { class: 'relative group cursor-help ml-0.5 select-none text-rose-500 font-bold inline-block' },
-    [
-        '*',
-        h(
-            'span',
-            { 
-                class: 'absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex items-center px-2.5 py-1 text-[11px] font-normal text-white bg-slate-900 dark:bg-slate-700 rounded-md shadow-lg whitespace-nowrap z-50 pointer-events-none transition-all duration-150 normal-case tracking-normal' 
-            },
-            [
-                'Itens marcados com * são obrigatórios',
-                h('span', { class: 'absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900 dark:border-t-slate-700' })
-            ]
-        )
-    ]
-);
 
 const props = defineProps({
     metricas: {
@@ -74,20 +57,6 @@ const timeToMinutes = (timeStr) => {
     return (horas * 60) + (minutos || 0);
 };
 
-const minutesToTime = (val) => {
-    if (val === null || val === undefined || val === '') return '';
-    if (typeof val === 'string' && val.includes(':')) return val;
-    
-    let totalMinutos = Number(val);
-    if (isNaN(totalMinutos)) return '';
-    if (!Number.isInteger(totalMinutos)) {
-        totalMinutos = Math.round(totalMinutos * 60);
-    }
-    const horas = Math.floor(totalMinutos / 60);
-    const minutos = totalMinutos % 60;
-    return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
-};
-
 const limiteHorasPeriodo = computed(() => {
     if (!form.data_inicio || !form.data_fim) return null;
     const [y1, m1, d1] = form.data_inicio.split('-').map(Number);
@@ -118,75 +87,13 @@ const isNpsInvalido = computed(() => {
     return isNaN(val) || val < 0 || val > 10;
 });
 
-const resetForm = () => {
-    isEditing.value = false;
-    form.reset();
-    form.user_id = props.isGestor ? '' : props.currentUserId;
-    form.tipo = 'Meta de Vendas (R$)';
-    form.clearErrors();
-};
-
-const editMetrica = (item) => {
-    isEditing.value = true;
-    form.clearErrors();
-    form.id = item.id;
-    form.user_id = props.isGestor ? (item.user_id || '') : props.currentUserId;
-    form.data_inicio = item.data_inicio;
-    form.data_fim = item.data_fim;
-    form.tipo = item.tipo;
-    form.observacao = item.observacao || '';
-
-    if (item.valor !== null && item.valor !== undefined && item.valor !== '') {
-        if (item.tipo.includes('(R$)')) {
-            const num = parseFloat(item.valor) || 0;
-            form.valor = num.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
-        } else if (item.tipo === 'Horas Trabalhadas') {
-            form.valor = minutesToTime(item.valor);
-        } else {
-            form.valor = String(item.valor);
-        }
-    } else {
-        form.valor = '';
-    }
-};
-
-const tratarValorEnvio = (tipo, valor) => {
-    if (tipo.includes('(R$)')) {
-        if (typeof valor === 'number') return valor;
-        if (!valor) return 0;
-        const valorLimpo = String(valor).replace(/\./g, '').replace(',', '.');
-        return parseFloat(valorLimpo) || 0;
-    }
-    if (tipo === 'Horas Trabalhadas') {
-        return timeToMinutes(valor);
-    }
-    return Number(valor) || 0;
-};
-
-const submit = () => {
-    if (isHorasExcedidas.value || isNpsInvalido.value) return;
-
-    const payloadTransform = (data) => ({
-        ...data,
-        valor: tratarValorEnvio(data.tipo, data.valor),
-    });
-
-    if (isEditing.value) {
-        form.transform(payloadTransform).put(route('metricas.update', form.id), {
-            onSuccess: () => resetForm(),
-        });
-    } else {
-        form.transform(payloadTransform).post(route('metricas.store'), {
-            onSuccess: () => {
-                resetForm();
-                hasCreatedNewMetrica.value = true;
-            },
-        });
-    }
-};
+const { resetForm, editMetrica, submit } = useMetricaForm(
+    form,
+    isEditing,
+    props,
+    { minutesToTime, timeToMinutes },
+    { isHorasExcedidas, isNpsInvalido, hasCreatedNewMetrica }
+);
 
 const deleteMetrica = (id) => {
     if (confirm('Tem certeza que deseja remover esta métrica?')) {

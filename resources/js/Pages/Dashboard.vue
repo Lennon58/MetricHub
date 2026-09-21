@@ -238,6 +238,7 @@ const graficosPorUsuarioETipo = computed(() => {
 </template>
 
 <style>
+
 /* =========================================================
    ESTRUTURA PADRONIZADA - IGUAL NOS DOIS TEMAS
    ========================================================= */
