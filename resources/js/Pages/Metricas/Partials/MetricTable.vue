@@ -125,7 +125,7 @@ const getBadgeStyle = (tipo) => {
 
                         <td class="py-4 px-6 text-right whitespace-nowrap">
                             <EditDeletMetrica 
-                                :can-edit="props.isGestor || item.user_id === props.currentUserId"
+                                :can-edit="props.isGestor"
                                 @edit="$emit('edit', item)"
                                 @delete="$emit('delete', item.id)"
                             />

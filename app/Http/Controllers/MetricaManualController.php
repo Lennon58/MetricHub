@@ -75,8 +75,8 @@ class MetricaManualController extends Controller
     {
         $user = $request->user();
 
-        // Bloqueia se um colaborador tentar editar registro de terceiro
-        if ($user->isColaborador() && $metricaManual->user_id !== $user->id) {
+        // Apenas gestores podem editar registros
+        if (! $user->isGestor()) {
             abort(403, 'Ação não autorizada.');
         }
 
@@ -108,8 +108,8 @@ class MetricaManualController extends Controller
     {
         $user = $request->user();
 
-        // Bloqueia se um colaborador tentar excluir registro de terceiro
-        if ($user->isColaborador() && $metricaManual->user_id !== $user->id) {
+        // Apenas gestores podem excluir registros
+        if (! $user->isGestor()) {
             abort(403, 'Ação não autorizada.');
         }
 

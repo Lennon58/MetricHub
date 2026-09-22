@@ -4,10 +4,9 @@ import { useForm, router, Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputName from './Partials/InputName.vue';
 import InputDate from './Partials/InputDate.vue';
-import InputMetrictype from './Partials/InputMetrictype.vue';
-import InputValue from './Partials/InputValue.vue';
 import InputObs from './Partials/InputObs.vue';
 import MetricTable from './Partials/MetricTable.vue';
+import MetricTypeValueField from './Partials/MetricTypeValueField.vue';
 import { minutesToTime } from '@/Composables/useTimeConverter';
 import { useMetricaForm } from '@/Composables/useMetricaForm';
 
@@ -232,44 +231,17 @@ const getBadgeStyle = (tipo) => {
                         </div>
 
                         <!-- 3. Tipo de Métrica e Valor integrados -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                            <div class="sm:col-span-2">
-                                <InputMetrictype v-model="form.tipo" />
-                                <span v-if="form.errors.tipo" class="text-xs font-medium text-rose-600 dark:text-rose-400 mt-1.5 block">
-                                    {{ form.errors.tipo }}
-                                </span>
-                            </div>
+                        <MetricTypeValueField
+                            v-model:tipo="form.tipo"
+                            v-model:valor="form.valor"
+                            :errors-tipo="form.errors.tipo"
+                            :errors-valor="form.errors.valor"
+                            :is-horas-excedidas="isHorasExcedidas"
+                            :is-nps-invalido="isNpsInvalido"
+                            :limite-horas-periodo="limiteHorasPeriodo"
+                        />
 
-                            <div>
-                                <InputValue 
-                                    v-model="form.valor" 
-                                    :tipo="form.tipo" 
-                                />
-                                <span v-if="form.errors.valor" class="text-xs font-medium text-rose-600 dark:text-rose-400 mt-1.5 block">
-                                    {{ form.errors.valor }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div v-if="isHorasExcedidas" class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 flex items-start gap-3">
-                            <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p class="text-xs font-medium text-rose-700 dark:text-rose-300">
-                                Atenção: O total digitado (<strong>{{ form.valor }}h</strong>) excede o limite do período selecionado (<strong>{{ limiteHorasPeriodo }}h</strong>).
-                            </p>
-                        </div>
-
-                        <div v-if="isNpsInvalido" class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 flex items-start gap-3">
-                            <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p class="text-xs font-medium text-rose-700 dark:text-rose-300">
-                                A nota do NPS precisa estar dentro do intervalo permitido (entre 0 e 10).
-                            </p>
-                        </div>
-
-                        <!-- 5. Observação -->
+                        <!-- 4. Observação -->
                         <div>
                             <InputObs v-model="form.observacao" />
                             <span v-if="form.errors.observacao" class="text-xs font-medium text-rose-600 dark:text-rose-400 mt-1.5 block">

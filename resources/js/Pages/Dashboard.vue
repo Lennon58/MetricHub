@@ -6,6 +6,7 @@ import UserSelectFilter from "@/Components/UserSelectFilter.vue";
 import DateRangeFilter from "@/Components/DateRangeFilter.vue";
 import DashboardStats from "@/Components/DashboardStats.vue";
 import DashboardChartsGrid from "@/Components/DashboardChartsGrid.vue";
+import { useDashboardCharts } from "@/Composables/useDashboardCharts";
 
 interface User {
     id: number;
@@ -60,124 +61,9 @@ watch(
     { deep: true },
 );
 
-const chartColors = ["#6366F1", "#10B981", "#EF4444", "#F59E0B", "#8B5CF6"];
-
-const graficosPorUsuarioETipo = computed(() => {
-    if (!props.metricas || props.metricas.length === 0) return [];
-
-    const tiposUnicos = [...new Set(props.metricas.map((m) => m.tipo))];
-
-    const usuariosMap: Record<number, { id: number; name: string }> = {};
-    props.metricas.forEach((m) => {
-        if (m.user_id) {
-            usuariosMap[m.user_id] = {
-                id: m.user_id,
-                name: m.user?.name || `Usuário #${m.user_id}`,
-            };
-        }
-    });
-
-    const listaGraficos: Array<{
-        userId: number;
-        userName: string;
-        tipo: string;
-        titulo: string;
-        hasData: boolean;
-        series: Array<{ name: string; data: Array<{ x: string; y: number }> }>;
-        options: any;
-    }> = [];
-
-    Object.values(usuariosMap).forEach((usuario) => {
-        tiposUnicos.forEach((tipo) => {
-            const metricasFiltradas = props.metricas!.filter(
-                (m) => m.user_id === usuario.id && m.tipo === tipo,
-            );
-
-            const hasData = metricasFiltradas.length > 0;
-
-            const metricasOrdenadas = [...metricasFiltradas].sort((a, b) => {
-                const dateA = new Date(
-                    a.data_inicio || a.created_at || 0,
-                ).getTime();
-                const dateB = new Date(
-                    b.data_inicio || b.created_at || 0,
-                ).getTime();
-                return dateA - dateB;
-            });
-
-            const dataPoints = metricasOrdenadas.map((m) => {
-                const rawDate = m.data_inicio || m.created_at;
-                const formattedDate = rawDate
-                    ? new Date(rawDate).toLocaleDateString("pt-BR", {
-                          day: "2-digit",
-                          month: "2-digit",
-                      })
-                    : "S/D";
-                return {
-                    x: `${formattedDate} (#${m.id})`,
-                    y: Number(m.valor),
-                };
-            });
-
-            const finalData =
-                dataPoints.length > 0
-                    ? [{ x: "Início", y: 0 }, ...dataPoints]
-                    : [];
-
-            listaGraficos.push({
-                userId: usuario.id,
-                userName: usuario.name,
-                tipo: tipo,
-                titulo: `${usuario.name} — ${tipo}`,
-                hasData: hasData,
-                series: [
-                    {
-                        name: usuario.name,
-                        data: finalData,
-                    },
-                ],
-                options: {
-                    chart: {
-                        type: "line",
-                        fontFamily: "Inter, sans-serif",
-                        toolbar: { show: true, offsetY: -65 },
-                        background: "transparent",
-                        zoom: { enabled: false },
-                    },
-                    colors: [chartColors[usuario.id % chartColors.length]],
-                    stroke: { curve: "smooth", width: 3 },
-                    markers: { size: 6, hover: { size: 8 } },
-                    dataLabels: { enabled: false },
-                    xaxis: {
-                        type: "category",
-                        axisBorder: { show: false },
-                        axisTicks: { show: false },
-                        labels: {
-                            style: {
-                                colors: "#64748B",
-                            },
-                        },
-                    },
-                    yaxis: {
-                        min: 0,
-                        forceNiceScale: true,
-                        labels: {
-                            formatter: (val: number) => val.toFixed(0),
-                            style: {
-                                colors: "#64748B",
-                            },
-                        },
-                    },
-                    grid: { strokeDashArray: 4 },
-                    legend: { show: false },
-                    tooltip: { shared: false, intersect: true },
-                },
-            });
-        });
-    });
-
-    return listaGraficos;
-});
+const { graficosPorUsuarioETipo } = useDashboardCharts(
+    computed(() => props.metricas),
+);
 </script>
 
 <template>
