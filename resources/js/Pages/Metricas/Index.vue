@@ -6,6 +6,7 @@ import MetricTable from './Partials/MetricTable.vue';
 import MetricFormCard from './Partials/MetricFormCard.vue';
 import { minutesToTime } from '@/Composables/useTimeConverter';
 import { useMetricaForm } from '@/Composables/useMetricaForm';
+import MetricSuccessBanner from './Partials/MetricSuccessBanner.vue';
 
 const hasCreatedNewMetrica = ref(false);
 
@@ -132,50 +133,16 @@ const getBadgeStyle = (tipo) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="font-extrabold text-2xl text-slate-900 dark:text-white tracking-tight leading-tight transition-colors">
-                        Lançar Métricas
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 transition-colors">
-                        Registre e acompanhe metas, custos e indicadores operacionais.
-                    </p>
-                </div>
-            </div>
+            <!-- Header... -->
         </template>
 
         <div class="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
 
-            <!-- Banner Dinâmico -->
-            <Transition
-                enter-active-class="transition duration-300 ease-out"
-                enter-from-class="transform -translate-y-2 opacity-0"
-                enter-to-class="transform translate-y-0 opacity-100"
-            >
-                <div v-if="hasCreatedNewMetrica" class="p-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-white/20 rounded-xl backdrop-blur-md">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm">Lançamento realizado com sucesso!</h4>
-                            <p class="text-xs text-emerald-100">Deseja acompanhar os novos consolidados diretamente no painel?</p>
-                        </div>
-                    </div>
-
-                    <Link
-                        :href="route('dashboard')"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white text-emerald-700 font-bold text-xs uppercase tracking-wider hover:bg-emerald-50 active:scale-95 transition-all shadow-md shrink-0"
-                    >
-                        <span>Visualizar Métricas</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </Link>
-                </div>
-            </Transition>
+            <!-- Banner de Sucesso Extraído e Estilizado -->
+            <MetricSuccessBanner 
+                :show="hasCreatedNewMetrica" 
+                @close="hasCreatedNewMetrica = false" 
+            />
             
             <!-- Card Formulário -->
             <MetricFormCard
