@@ -126,6 +126,7 @@ const getBadgeStyle = (tipo) => {
     if (tipo?.includes('Horas')) return 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-500/30';
     return 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-950/40 dark:text-amber-400 dark:ring-amber-500/30';
 };
+
 </script>
 
 <template>

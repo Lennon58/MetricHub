@@ -5,6 +5,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(["update:startDate", "update:endDate", "filter"]);
+
+const hoje = new Date().toISOString().split("T")[0];
 </script>
 
 <template>
@@ -14,6 +16,7 @@ const emit = defineEmits(["update:startDate", "update:endDate", "filter"]);
             <input
                 type="date"
                 :value="startDate"
+                :max="hoje"
                 @input="emit('update:startDate', ($event.target as HTMLInputElement).value)"
                 class="bg-transparent text-xs text-slate-900 dark:text-white focus:outline-none border-none p-0 cursor-pointer"
             />
@@ -24,6 +27,7 @@ const emit = defineEmits(["update:startDate", "update:endDate", "filter"]);
             <input
                 type="date"
                 :value="endDate"
+                :max="hoje"
                 @input="emit('update:endDate', ($event.target as HTMLInputElement).value)"
                 class="bg-transparent text-xs text-slate-900 dark:text-white focus:outline-none border-none p-0 cursor-pointer"
             />

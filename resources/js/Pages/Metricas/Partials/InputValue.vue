@@ -44,6 +44,7 @@ const inputBaseClass = computed(() => {
 const handleMoedaInput = (event) => {
     let value = event.target.value.replace(/\D/g, '');
     if (value === '') {
+        event.target.value = '';
         emit('update:modelValue', '');
         return;
     }
@@ -51,20 +52,19 @@ const handleMoedaInput = (event) => {
     const parts = numberValue.split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     const formatted = parts.join(',');
+    event.target.value = formatted;
     emit('update:modelValue', formatted);
 };
 
-// 2. Horas: Remove tudo que não for dígito e formata como HH:MM
+// 2. Horas: Remove tudo que não for dígito e formata como HH:MM (minutos sempre com 2 dígitos, horas sem limite)
 const handleHorasInput = (event) => {
     let value = event.target.value.replace(/\D/g, '');
-    if (value.length > 4) {
-        value = value.slice(0, 4);
-    }
     if (value.length >= 3) {
         const horas = value.slice(0, value.length - 2);
         const minutos = value.slice(-2);
         value = `${horas}:${minutos}`;
     }
+    event.target.value = value; // Garante que o campo na tela reflita o valor corrigido/limitado
     emit('update:modelValue', value);
 };
 
