@@ -121,4 +121,4 @@ const { graficosPorUsuarioETipo } = useDashboardCharts(
                 
         </div>
     </AuthenticatedLayout>
-</template>
+</template> 
